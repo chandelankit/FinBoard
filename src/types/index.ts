@@ -109,4 +109,5 @@ export interface ApiConfig {
     requestsPerMinute: number;
     requestsPerDay: number;
   };
+  _updatedAt?: number; // Timestamp to track when config was last updated
 }

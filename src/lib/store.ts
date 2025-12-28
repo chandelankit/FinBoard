@@ -26,7 +26,7 @@ interface DashboardStore extends DashboardState {
 
 const defaultApiConfig: ApiConfig = {
   provider: 'indianapi',
-  apiKey: 'sk-live-kV2waWVc9z3oUzWaxvu5JWYU1gv9eYIcvtj9uHO9',
+  apiKey: 'sk-live-rHniKawAzUChYnvlCrHHDldCwwqPtgAEZhpRaLew',
   baseUrl: 'https://stock.indianapi.in',
   rateLimit: {
     requestsPerMinute: 60,
@@ -98,7 +98,12 @@ export const useDashboardStore = create<DashboardStore>()(
       // API configuration
       setApiConfig: (config) => {
         set((state) => ({
-          apiConfig: { ...state.apiConfig, ...config },
+          apiConfig: { 
+            ...state.apiConfig, 
+            ...config,
+            // Add a timestamp to force widgets to refetch when API key changes
+            _updatedAt: Date.now()
+          },
         }));
       },
 
@@ -128,7 +133,7 @@ export const useDashboardStore = create<DashboardStore>()(
       resetDashboard: () => {
         set({
           widgets: [],
-          theme: 'light',
+          theme: 'dark',
           error: null,
         });
       },

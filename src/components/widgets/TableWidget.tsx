@@ -23,7 +23,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget, onEdit, onDele
   const config = widget.config?.tableConfig || {};
   const { columns = [], pagination = {}, filters = {} } = config;
 
-  // Fetch data
+  // Fetch data with staggered loading
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -49,26 +49,18 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget, onEdit, onDele
       }
     };
 
-    fetchData();
-  }, [config.symbol, apiConfig.apiKey]); // Only refetch when symbol or API key changes
-
-  // Set up refresh interval
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!apiConfig.apiKey || apiConfig.apiKey.trim() === '') {
-        setData(mockData.stockList);
-      } else {
-        const api = getApiClient(apiConfig);
-        const symbol = config.symbol || 'RELIANCE';
-        const stocks = await api.getStockData(symbol);
-        setData(stocks);
-      }
-    };
-
+    // Stagger initial load to prevent simultaneous requests
+    const staggerDelay = Math.random() * 5000; // Random delay 0-5 seconds (increased)
+    const initialTimeout = setTimeout(fetchData, staggerDelay);
+    
+    // Set up refresh interval
     const interval = setInterval(fetchData, 60000); // Refresh every minute
     
-    return () => clearInterval(interval);
-  }, [config.symbol, apiConfig.apiKey]);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [config.symbol, apiConfig.apiKey, apiConfig._updatedAt]);
 
   // Process data
   const processedData = useMemo(() => {
@@ -137,7 +129,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget, onEdit, onDele
 
   if (loading && data.length === 0) {
     return (
-      <Card className="h-full">
+      <Card className="glass-card" style={{ border: 'none', width: 'fit-content', minWidth: '400px', borderRadius: '16px', overflow: 'hidden' }}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>{widget.title}</span>
@@ -165,7 +157,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget, onEdit, onDele
   }
 
   return (
-    <Card className="h-full glass-card">
+    <Card className="glass-card" style={{ border: 'none', width: 'fit-content', minWidth: '400px', borderRadius: '16px', overflow: 'hidden' }}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span className="font-heading">{widget.title}</span>

@@ -31,7 +31,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget, onEdit, onDele
   
   const config = widget.config.chartConfig;
 
-  // Fetch data
+  // Fetch data with staggered loading
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -55,13 +55,18 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget, onEdit, onDele
       }
     };
 
-    fetchData();
+    // Stagger initial load by widget ID to prevent simultaneous requests
+    const staggerDelay = Math.random() * 5000; // Random delay 0-5 seconds (increased)
+    const initialTimeout = setTimeout(fetchData, staggerDelay);
     
     // Set up refresh interval
     const interval = setInterval(fetchData, config.refreshInterval || 300000);
     
-    return () => clearInterval(interval);
-  }, [apiConfig, config.symbol, config.interval, config.refreshInterval]);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [apiConfig.apiKey, apiConfig._updatedAt, config.symbol, config.interval, config.refreshInterval]);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     const isDark = theme === 'dark';
@@ -152,7 +157,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget, onEdit, onDele
 
   if (loading && data.length === 0) {
     return (
-      <Card className="h-full">
+      <Card className="glass-card" style={{ border: 'none', width: 'fit-content', minWidth: '500px', borderRadius: '16px', overflow: 'hidden' }}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>{widget.title}</span>
@@ -180,7 +185,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget, onEdit, onDele
   }
 
   return (
-    <Card className="h-full">
+    <Card className="glass-card" style={{ border: 'none', width: 'fit-content', minWidth: '500px', borderRadius: '16px', overflow: 'hidden' }}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">

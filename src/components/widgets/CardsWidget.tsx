@@ -50,7 +50,7 @@ export const CardsWidget: React.FC<CardsWidgetProps> = ({ widget, onEdit, onDele
     return result;
   }, [data, searchTerm, filterType]);
 
-  // Fetch data
+  // Fetch data with staggered loading
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -86,13 +86,18 @@ export const CardsWidget: React.FC<CardsWidgetProps> = ({ widget, onEdit, onDele
       }
     };
 
-    fetchData();
+    // Stagger initial load to prevent simultaneous requests
+    const staggerDelay = Math.random() * 5000; // Random delay 0-5 seconds (increased)
+    const initialTimeout = setTimeout(fetchData, staggerDelay);
     
     // Set up refresh interval
     const interval = setInterval(fetchData, config.refreshInterval || 60000);
     
-    return () => clearInterval(interval);
-  }, [apiConfig, config.type, config.refreshInterval]);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [apiConfig.apiKey, apiConfig._updatedAt, config.type, config.refreshInterval]);
 
   const getTrendIcon = (change: number) => {
     if (change > 0) return <TrendingUp className="h-4 w-4 text-green-600" />;
@@ -108,7 +113,7 @@ export const CardsWidget: React.FC<CardsWidgetProps> = ({ widget, onEdit, onDele
 
   if (loading && data.length === 0) {
     return (
-      <Card className="h-full">
+      <Card className="glass-card" style={{ border: 'none', width: 'fit-content', minWidth: '400px', borderRadius: '16px', overflow: 'hidden' }}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>{widget.title}</span>
@@ -136,7 +141,7 @@ export const CardsWidget: React.FC<CardsWidgetProps> = ({ widget, onEdit, onDele
   }
 
   return (
-    <Card className="h-full glass-card">
+    <Card className="glass-card" style={{ border: 'none', width: 'fit-content', minWidth: '400px', borderRadius: '16px', overflow: 'hidden' }}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span className="font-heading">{widget.title}</span>

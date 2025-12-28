@@ -168,41 +168,18 @@ const DashboardContent: React.FC = () => {
     }
   };
 
-  // Empty state when no widgets
-  if (widgets.length === 0) {
-    return (
-      <div className={`${theme === 'dark' ? 'dark' : ''}`} style={{ minHeight: '100vh' }}>
-        <div className="max-w-7xl mx-auto p-8">
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 glass-card rounded-full flex items-center justify-center mb-4">
-                <Plus className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-heading mb-2">No widgets yet</h3>
-              <p className="opacity-75 mb-6">Add your first financial widget</p>
-              <Button onClick={() => setShowAddWidgetDialog(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Widget
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`${theme === 'dark' ? 'dark' : ''}`} style={{ minHeight: '200vh', height: 'auto' }}>
-      {/* Header */}
-      <header className="glass-card border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
+    <div className={`${theme === 'dark' ? 'dark' : ''}`} style={{ minHeight: '100vh', padding: '16px', backgroundColor: theme === 'dark' ? '#0f172a' : '#f8fafc' }}>
+      {/* Header - Always visible */}
+      <header className="glass-card rounded-2xl shadow-lg mb-6" style={{ border: 'none', overflow: 'hidden' }}>
+        <div className="max-w-7xl mx-auto" style={{ padding: '12px 20px' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center" style={{ minWidth: '200px' }}>
               <div>
-                <h1 className="text-2xl font-heading text-gradient">
+                <h1 className="text-lg font-heading text-gradient" style={{ marginBottom: '2px', lineHeight: '1.2' }}>
                   FinBoard
                 </h1>
-                <p className="text-sm opacity-75 mt-1">Finance Dashboard</p>
+                <p className="text-xs opacity-75" style={{ whiteSpace: 'nowrap', lineHeight: '1' }}>Finance Dashboard</p>
               </div>
             </div>
             
@@ -288,40 +265,74 @@ const DashboardContent: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Dashboard */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={widgets.map(w => w.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {widgets.map((widget) => (
-                <SortableWidget key={widget.id} id={widget.id}>
-                  <div className={`col-span-${widget.size.width} row-span-${widget.size.height}`}>
-                    {renderWidget(widget)}
-                  </div>
-                </SortableWidget>
-              ))}
-            </div>
-            
-            {/* Add Widget Dialog - appears after widgets */}
-            {showAddWidgetDialog && (
-              <div className="col-span-1 md:col-span-2 lg:col-span-3">
-                <AddWidgetDialog 
-                  isOpen={showAddWidgetDialog}
-                  onClose={() => setShowAddWidgetDialog(false)}
-                  onAddWidget={handleAddWidget}
-                />
+      {/* Empty state when no widgets */}
+      {widgets.length === 0 ? (
+        <div className="max-w-7xl mx-auto" style={{ marginTop: '80px' }}>
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 glass-card rounded-full flex items-center justify-center mb-4">
+                <Plus className="h-6 w-6" />
               </div>
-            )}
-          </SortableContext>
-        </DndContext>
-      </main>
+              <h3 className="text-lg font-heading mb-2">No widgets yet</h3>
+              <p className="opacity-75 mb-6">Add your first financial widget</p>
+              <Button onClick={() => setShowAddWidgetDialog(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Widget
+              </Button>
+            </div>
+          </div>
+          
+          {/* Add Widget Dialog - appears in empty state */}
+          {showAddWidgetDialog && (
+            <AddWidgetDialog 
+              isOpen={showAddWidgetDialog}
+              onClose={() => setShowAddWidgetDialog(false)}
+              onAddWidget={handleAddWidget}
+            />
+          )}
+        </div>
+      ) : (
+        /* Main Dashboard - when widgets exist */
+        <main className="max-w-7xl mx-auto" style={{ marginTop: '24px', padding: '0 16px' }}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={widgets.map(w => w.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="flex flex-wrap" style={{ gap: '24px' }}>
+                {widgets.map((widget) => (
+                  <SortableWidget key={widget.id} id={widget.id}>
+                    <div style={{ 
+                      border: '3px dotted #10b981', 
+                      borderRadius: '16px',
+                      padding: '0',
+                      minWidth: 'fit-content',
+                      overflow: 'hidden'
+                    }}>
+                      {renderWidget(widget)}
+                    </div>
+                  </SortableWidget>
+                ))}
+              </div>
+              
+              {/* Add Widget Dialog - appears after widgets */}
+              {showAddWidgetDialog && (
+                <div className="w-full">
+                  <AddWidgetDialog 
+                    isOpen={showAddWidgetDialog}
+                    onClose={() => setShowAddWidgetDialog(false)}
+                    onAddWidget={handleAddWidget}
+                  />
+                </div>
+              )}
+            </SortableContext>
+          </DndContext>
+        </main>
+      )}
 
       <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <WidgetConfigPanel 
