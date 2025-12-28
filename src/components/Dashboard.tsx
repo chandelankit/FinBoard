@@ -294,6 +294,17 @@ const DashboardContent: React.FC = () => {
       ) : (
         /* Main Dashboard - when widgets exist */
         <main className="max-w-7xl mx-auto" style={{ marginTop: '24px', padding: '0 16px' }}>
+          {/* Add Widget Dialog - appears at the top */}
+          {showAddWidgetDialog && (
+            <div style={{ marginBottom: '24px' }}>
+              <AddWidgetDialog 
+                isOpen={showAddWidgetDialog}
+                onClose={() => setShowAddWidgetDialog(false)}
+                onAddWidget={handleAddWidget}
+              />
+            </div>
+          )}
+          
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -318,17 +329,6 @@ const DashboardContent: React.FC = () => {
                   </SortableWidget>
                 ))}
               </div>
-              
-              {/* Add Widget Dialog - appears after widgets */}
-              {showAddWidgetDialog && (
-                <div className="w-full">
-                  <AddWidgetDialog 
-                    isOpen={showAddWidgetDialog}
-                    onClose={() => setShowAddWidgetDialog(false)}
-                    onAddWidget={handleAddWidget}
-                  />
-                </div>
-              )}
             </SortableContext>
           </DndContext>
         </main>

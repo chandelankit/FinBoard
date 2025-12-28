@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { X, Plus, Table, BarChart3, CreditCard, Settings, RefreshCw } from 'lucide-react';
+import { useDashboardStore } from '@/lib/store';
 
 interface AddWidgetDialogProps {
   isOpen: boolean;
@@ -29,6 +30,9 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
     fields: [],
     customConfig: {},
   });
+  
+  // Get theme from store
+  const { theme } = useDashboardStore();
 
   const widgetTypes = [
     {
@@ -172,13 +176,30 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
                   <button
                     key={widgetType.type}
                     onClick={() => handleTypeSelect(widgetType.type)}
-                    className="p-4 border rounded-lg hover:bg-gray-50 text-left transition-colors"
+                    className="p-4 border-2 rounded-xl hover:border-orange-500 text-left transition-all duration-200"
+                    style={{ 
+                      borderRadius: '12px',
+                      backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                      borderColor: isDark ? '#374151' : '#e5e7eb',
+                      color: isDark ? '#f8fafc' : '#0f172a'
+                    }}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="h-6 w-6 text-blue-600" />
+                      <div 
+                        className="p-2 rounded-lg"
+                        style={{
+                          backgroundColor: isDark ? '#7c2d12' : '#fed7aa'
+                        }}
+                      >
+                        <Icon className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                      </div>
                       <div>
-                        <div className="font-medium">{widgetType.name}</div>
-                        <div className="text-sm text-gray-600">{widgetType.description}</div>
+                        <div className="font-medium" style={{ color: isDark ? '#f8fafc' : '#0f172a' }}>
+                          {widgetType.name}
+                        </div>
+                        <div className="text-sm" style={{ color: isDark ? '#9ca3af' : '#6b7280' }}>
+                          {widgetType.description}
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -191,20 +212,26 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
       case 2:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium mb-4">Widget Configuration</h3>
+            <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">Widget Configuration</h3>
             
             <div>
-              <label className="block text-sm font-medium mb-2">Widget Name</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Widget Name</label>
               <Input
                 value={widgetConfig.title}
                 onChange={(e) => setWidgetConfig(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="Enter widget name"
+                className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
+                style={{ 
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  color: isDark ? '#f8fafc' : '#0f172a',
+                  borderColor: isDark ? '#4b5563' : '#d1d5db'
+                }}
               />
             </div>
 
             {(widgetConfig.type === 'table' || widgetConfig.type === 'chart') && (
               <div>
-                <label className="block text-sm font-medium mb-2">Stock Symbol</label>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Stock Symbol</label>
                 <Input
                   value={widgetConfig.customConfig.symbol || 'RELIANCE'}
                   onChange={(e) => setWidgetConfig(prev => ({ 
@@ -212,23 +239,41 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
                     customConfig: { ...prev.customConfig, symbol: e.target.value.toUpperCase() }
                   }))}
                   placeholder="Enter stock symbol (e.g., RELIANCE, HDFC)"
+                  className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
+                  style={{ 
+                    backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                    color: isDark ? '#f8fafc' : '#0f172a',
+                    borderColor: isDark ? '#4b5563' : '#d1d5db'
+                  }}
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-2">API Endpoint</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">API Endpoint</label>
               <select
                 value={widgetConfig.apiEndpoint}
                 onChange={(e) => setWidgetConfig(prev => ({ ...prev, apiEndpoint: e.target.value }))}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:text-gray-100"
+                style={{ 
+                  borderRadius: '8px',
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  color: isDark ? '#f8fafc' : '#0f172a'
+                }}
               >
                 {apiEndpoints
                   .filter(endpoint => 
                     widgetTypes.find(w => w.type === widgetConfig.type)?.availableEndpoints.includes(endpoint.path)
                   )
                   .map((endpoint) => (
-                    <option key={endpoint.path} value={endpoint.path}>
+                    <option 
+                      key={endpoint.path} 
+                      value={endpoint.path}
+                      style={{ 
+                        backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                        color: isDark ? '#f8fafc' : '#0f172a'
+                      }}
+                    >
                       {endpoint.path} - {endpoint.description}
                     </option>
                   ))}
@@ -236,14 +281,26 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Refresh Interval</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Refresh Interval</label>
               <select
                 value={widgetConfig.refreshInterval}
                 onChange={(e) => setWidgetConfig(prev => ({ ...prev, refreshInterval: parseInt(e.target.value) }))}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:text-gray-100"
+                style={{ 
+                  borderRadius: '8px',
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  color: isDark ? '#f8fafc' : '#0f172a'
+                }}
               >
                 {refreshIntervals.map((interval) => (
-                  <option key={interval.value} value={interval.value}>
+                  <option 
+                    key={interval.value} 
+                    value={interval.value}
+                    style={{ 
+                      backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                      color: isDark ? '#f8fafc' : '#0f172a'
+                    }}
+                  >
                     {interval.label}
                   </option>
                 ))}
@@ -255,8 +312,8 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
       case 3:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium mb-4">Field Selection</h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">Field Selection</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Select the data fields you want to display in this widget
             </p>
             
@@ -264,7 +321,7 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
               {widgetTypes
                 .find(w => w.type === widgetConfig.type)
                 ?.defaultFields.map((field) => (
-                  <label key={field} className="flex items-center gap-2">
+                  <label key={field} className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={widgetConfig.fields.includes(field)}
@@ -278,9 +335,9 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
                           }));
                         }
                       }}
-                      className="rounded"
+                      className="rounded text-orange-500 focus:ring-orange-500"
                     />
-                    <span className="text-sm">{field}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{field}</span>
                   </label>
                 ))}
             </div>
@@ -290,30 +347,36 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
       case 4:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium mb-4">Review & Create</h3>
+            <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">Review & Create</h3>
             
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+            <div 
+              className="p-4 rounded-xl space-y-3 border"
+              style={{
+                backgroundColor: isDark ? '#1f2937' : '#f9fafb',
+                borderColor: isDark ? '#374151' : '#e5e7eb'
+              }}
+            >
               <div>
-                <span className="text-sm font-medium text-gray-600">Widget Type:</span>
-                <span className="ml-2 text-sm">{widgetTypes.find(w => w.type === widgetConfig.type)?.name}</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Widget Type:</span>
+                <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{widgetTypes.find(w => w.type === widgetConfig.type)?.name}</span>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-600">Name:</span>
-                <span className="ml-2 text-sm">{widgetConfig.title || 'Not set'}</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Name:</span>
+                <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{widgetConfig.title || 'Not set'}</span>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-600">API Endpoint:</span>
-                <span className="ml-2 text-sm">{widgetConfig.apiEndpoint}</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">API Endpoint:</span>
+                <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{widgetConfig.apiEndpoint}</span>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-600">Refresh Interval:</span>
-                <span className="ml-2 text-sm">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Refresh Interval:</span>
+                <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
                   {refreshIntervals.find(i => i.value === widgetConfig.refreshInterval)?.label}
                 </span>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-600">Selected Fields:</span>
-                <span className="ml-2 text-sm">{widgetConfig.fields.join(', ')}</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Selected Fields:</span>
+                <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{widgetConfig.fields.join(', ')}</span>
               </div>
             </div>
           </div>
@@ -326,17 +389,37 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
 
   if (!isOpen) return null;
 
+  const isDark = theme === 'dark';
+
   return (
-    <div className="w-full max-w-2xl mx-auto mt-6">
-      <Card className="w-full overflow-y-auto glass-card">
+    <div className={`w-full mx-auto ${isDark ? 'dark' : ''}`} style={{ maxWidth: '40%', minWidth: '400px' }}>
+      <Card 
+        className="w-full overflow-y-auto glass-card" 
+        style={{ 
+          border: '3px solid #f97316', 
+          borderRadius: '16px',
+          boxShadow: '0 8px 32px rgba(249, 115, 22, 0.3)',
+          backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          color: isDark ? '#f8fafc' : '#0f172a'
+        }}
+      >
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Plus className="h-5 w-5" />
+              <Plus className="h-5 w-5 text-orange-500" />
               <span className="font-heading">Add New Widget</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onClose}
+              className="rounded-full w-8 h-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
+              style={{
+                backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                border: `2px solid ${isDark ? '#374151' : '#e5e7eb'}`
+              }}
+            >
+              <X className="h-4 w-4 text-red-500" />
             </Button>
           </CardTitle>
           
@@ -344,16 +427,16 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
           <div className="flex items-center justify-between mt-4">
             {[1, 2, 3, 4].map((stepNum) => (
               <div key={stepNum} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
                   stepNum <= step 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-600'
+                    ? 'bg-orange-500 text-white shadow-lg' 
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                 }`}>
                   {stepNum}
                 </div>
                 {stepNum < 4 && (
-                  <div className={`w-12 h-1 mx-2 ${
-                    stepNum < step ? 'bg-blue-600' : 'bg-gray-200'
+                  <div className={`w-12 h-1 mx-2 transition-all ${
+                    stepNum < step ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'
                   }`} />
                 )}
               </div>
@@ -364,21 +447,55 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
         <CardContent>
           {renderStep()}
           
-          <div className="flex gap-2 mt-6 pt-4 border-t">
+          <div className="flex gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
             {step > 1 && (
-              <Button variant="outline" onClick={handleBack} className="flex-1">
+              <Button 
+                variant="outline" 
+                onClick={handleBack} 
+                className="flex-1"
+                style={{
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  color: isDark ? '#f8fafc' : '#0f172a',
+                  borderColor: isDark ? '#4b5563' : '#d1d5db'
+                }}
+              >
                 Back
               </Button>
             )}
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button 
+              variant="outline" 
+              onClick={onClose} 
+              className="flex-1"
+              style={{
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                color: isDark ? '#f8fafc' : '#0f172a',
+                borderColor: isDark ? '#4b5563' : '#d1d5db'
+              }}
+            >
               Cancel
             </Button>
             {step < 4 ? (
-              <Button onClick={handleNext} className="flex-1" disabled={step === 2 && !widgetConfig.title.trim()}>
+              <Button 
+                onClick={handleNext} 
+                className="flex-1 border-0" 
+                disabled={step === 2 && !widgetConfig.title.trim()}
+                style={{
+                  backgroundColor: '#f97316',
+                  color: '#ffffff'
+                }}
+              >
                 Next
               </Button>
             ) : (
-              <Button onClick={handleAddWidget} className="flex-1" disabled={!widgetConfig.title.trim()}>
+              <Button 
+                onClick={handleAddWidget} 
+                className="flex-1 border-0" 
+                disabled={!widgetConfig.title.trim()}
+                style={{
+                  backgroundColor: '#f97316',
+                  color: '#ffffff'
+                }}
+              >
                 Create Widget
               </Button>
             )}
