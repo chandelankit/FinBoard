@@ -305,3 +305,64 @@ export function getIndianApiClient(config: ApiConfig) {
   client.clearCache();
   return client;
 }
+
+/* ===============================
+   MOCK DATA FOR TESTING
+================================ */
+
+export const indianMockData = {
+  stockList: [
+    {
+      symbol: 'RELIANCE',
+      name: 'Reliance Industries',
+      price: 2450.50,
+      change: 25.30,
+      changePercent: 1.04,
+      volume: 5234567,
+      marketCap: 16500000000000,
+      high: 2460.00,
+      low: 2430.00,
+      open: 2435.00,
+      close: 2450.50,
+    },
+    {
+      symbol: 'TCS',
+      name: 'Tata Consultancy Services',
+      price: 3650.75,
+      change: -15.25,
+      changePercent: -0.42,
+      volume: 2345678,
+      marketCap: 13300000000000,
+      high: 3670.00,
+      low: 3640.00,
+      open: 3665.00,
+      close: 3650.75,
+    },
+  ],
+  gainers: [
+    {
+      symbol: 'INFY',
+      name: 'Infosys',
+      value: 1450.30,
+      change: 45.20,
+      changePercent: 3.22,
+      volume: 3456789,
+      type: 'gainer',
+    },
+    {
+      symbol: 'HDFC',
+      name: 'HDFC Bank',
+      value: 1650.80,
+      change: 32.50,
+      changePercent: 2.01,
+      volume: 4567890,
+      type: 'gainer',
+    },
+  ],
+  historicalData: [
+    { date: '2024-01-01', open: 2400, high: 2420, low: 2390, close: 2410, volume: 5000000 },
+    { date: '2024-01-02', open: 2410, high: 2430, low: 2405, close: 2425, volume: 5200000 },
+    { date: '2024-01-03', open: 2425, high: 2445, low: 2420, close: 2440, volume: 5100000 },
+    { date: '2024-01-04', open: 2440, high: 2460, low: 2435, close: 2450, volume: 5300000 },
+  ],
+};
