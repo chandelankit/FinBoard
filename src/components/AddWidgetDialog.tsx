@@ -136,7 +136,7 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
             pagination: { pageSize: 10, showPagination: true },
             filters: [],
             search: { enabled: true, placeholder: 'Search stocks...' },
-            symbol: widgetConfig.customConfig.symbol || 'RELIANCE',
+            symbol: widgetConfig.customConfig.symbol?.trim() || 'RELIANCE',
           },
         };
       case 'cards':
@@ -151,7 +151,7 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
       case 'chart':
         return {
           chartConfig: {
-            symbol: widgetConfig.customConfig.symbol || 'RELIANCE',
+            symbol: widgetConfig.customConfig.symbol?.trim() || 'RELIANCE',
             interval: '1yr',
             type: 'line', // or 'candlestick'
             showVolume: false,
@@ -233,7 +233,7 @@ export const AddWidgetDialog: React.FC<AddWidgetDialogProps> = ({ isOpen, onClos
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Stock Symbol</label>
                 <Input
-                  value={widgetConfig.customConfig.symbol || 'RELIANCE'}
+                  value={widgetConfig.customConfig.symbol ?? ''}
                   onChange={(e) => setWidgetConfig(prev => ({ 
                     ...prev, 
                     customConfig: { ...prev.customConfig, symbol: e.target.value.toUpperCase() }
