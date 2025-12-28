@@ -147,7 +147,7 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 export function validateApiKey(apiKey: string): boolean {
-  return apiKey && apiKey.trim().length > 0;
+  return !!(apiKey && apiKey.trim().length > 0);
 }
 
 export function getErrorMessage(error: any): string {
